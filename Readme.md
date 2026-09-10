@@ -3,6 +3,13 @@ It adds the note names of all notes in either the current selection or all voice
 So the output changes with the setting of Menu -> Edit -> Preferences... -> General -> Language, resp. if that is set to 'System', the output depends on the language setting of your PC.
 As a further extensions it also names notes with sharps, double sharps and double flats and the notename moves aside a bit, if it would otherwise collide with the note.
 
+Отличия от оригинального плагина MuseScore 4:
+
+- `note_names.qml` обновлён для MuseScore 4: версия плагина — `4.4.1`, обработка выделения использует именованные позиции курсора, а операция поддерживает отмену.
+- Добавлен диалог выбора режима: буквенные названия или сольфеджио с названиями «До», «Ре», «Ми», «Фа», «Соль», «Ля», «Си» и альтерациями.
+- При обработке пропускаются невидимые ноты и ноты, связанные с предыдущей нотой (`tieBack`).
+- Добавлен отдельный `note_numbers.qml`, выводящий ступени `1`–`7` с обозначениями альтераций.
+
 Available locales: English, German, Dutch, Japanese, Italian, French, Spanish, Portuguese, Russian, Romainan, Danish, Norwegian, Swedish, Polish, Slovak, Czech and Greek.
 
 The double sharp and double flat notes as well as Fb, Cb, E# and B# still need translation into Spanish, Portuguese, Romanian and Greek, help is more than welcome. Russian has been added.
