@@ -15,15 +15,19 @@
 //  the file LICENCE.GPL
 //=============================================================================
 
-import QtQuick 2.2
+import QtQuick 2.9
 import MuseScore 3.0
 
 MuseScore {
-   version: "4.4"
+   version: "4.4.1"
    description: "This plugin names notes as per your language setting"
    menuPath: "Plugins.Notes." + "Note Names"
 
    id: noteNames
+   pluginType: "dialog"
+   requiresScore: true
+   width: 420
+   height: 180
    //4.4 title: "Note Names"
    //4.4 categoryCode: "composing-arranging-tools"
    //4.4 thumbnailName: "note_names.png"
@@ -32,6 +36,124 @@ MuseScore {
          noteNames.title = "Note Names"
          noteNames.categoryCode = "composing-arranging-tools"
          noteNames.thumbnailName = "note_names.png"
+      }
+   }
+
+   // 0 = letters, 1 = solfege
+   property int namingMode: 0
+
+   SystemPalette {
+      id: palette
+      colorGroup: SystemPalette.Active
+   }
+
+   function solfegeName(tpc) {
+      if (tpc < -1 || tpc > 33)
+         return "?"
+
+      // MuseScore TPC order: F, C, G, D, A, E, B
+      var names = ["Фа", "До", "Соль", "Ре", "Ля", "Ми", "Си"]
+      var accidentals = ["♭♭", "♭", "", "♯", "♯♯"]
+      var noteIndex = (tpc + 1) % 7
+      var accidentalIndex = Math.floor((tpc + 1) / 7)
+      return names[noteIndex] + accidentals[accidentalIndex]
+   }
+
+   Rectangle {
+      anchors.fill: parent
+      color: palette.window
+
+      Text {
+         x: 20
+         y: 16
+         text: "Note naming:"
+         color: palette.windowText
+         font.pixelSize: 16
+      }
+
+      Rectangle {
+         id: lettersButton
+         x: 20
+         y: 48
+         width: parent.width - 40
+         height: 36
+         color: namingMode === 0 ? palette.highlight : palette.button
+         border.color: palette.mid
+
+         Text {
+            anchors.centerIn: parent
+            text: "Letters — C D E F G A B"
+            color: namingMode === 0 ? palette.highlightedText : palette.buttonText
+         }
+
+         MouseArea {
+            anchors.fill: parent
+            onClicked: namingMode = 0
+         }
+      }
+
+      Rectangle {
+         id: solfegeButton
+         x: 20
+         y: 94
+         width: parent.width - 40
+         height: 36
+         color: namingMode === 1 ? palette.highlight : palette.button
+         border.color: palette.mid
+
+         Text {
+            anchors.centerIn: parent
+            text: "Сольфеджио — До Ре Ми Фа Соль Ля Си"
+            color: namingMode === 1 ? palette.highlightedText : palette.buttonText
+         }
+
+         MouseArea {
+            anchors.fill: parent
+            onClicked: namingMode = 1
+         }
+      }
+
+      Rectangle {
+         x: parent.width - 220
+         y: 142
+         width: 90
+         height: 28
+         color: palette.button
+         border.color: palette.mid
+
+         Text {
+            anchors.centerIn: parent
+            text: "Cancel"
+            color: palette.buttonText
+         }
+
+         MouseArea {
+            anchors.fill: parent
+            onClicked: (typeof(quit) === 'undefined' ? Qt.quit : quit)()
+         }
+      }
+
+      Rectangle {
+         x: parent.width - 120
+         y: 142
+         width: 100
+         height: 28
+         color: palette.button
+         border.color: palette.mid
+
+         Text {
+            anchors.centerIn: parent
+            text: "Apply"
+            color: palette.buttonText
+         }
+
+         MouseArea {
+            anchors.fill: parent
+            onClicked: {
+               applyNoteNames()
+               (typeof(quit) === 'undefined' ? Qt.quit : quit)()
+            }
+         }
       }
    }
 
@@ -92,6 +214,9 @@ MuseScore {
             case 33: name = mscoreMajorVersion >= 4 ? qsTr("B♯♯") : qsTranslate("InspectorAmbitus", "B♯♯"); break;
             default: name = qsTr("?")   + text.text; break;
          } // end switch tpc
+
+         if (namingMode === 1)
+            name = solfegeName(notes[i].tpc)
 
          // octave, middle C being C4
          //oct = (Math.floor(notes[i].pitch / 12) - 1)
@@ -164,7 +289,7 @@ MuseScore {
       return text
    }
 
-   onRun: {
+   function applyNoteNames() {
       curScore.startCmd();
 
       var cursor = curScore.newCursor();
@@ -248,6 +373,8 @@ MuseScore {
       } // end for staff
 
       curScore.endCmd();
-      (typeof(quit) === 'undefined' ? Qt.quit : quit)()
-   } // end onRun
+   } // end applyNoteNames
+
+   onRun: {
+   }
 }
