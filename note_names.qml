@@ -19,21 +19,45 @@ import QtQuick 2.9
 import MuseScore 3.0
 
 MuseScore {
-   version: "4.4.1"
+   version: "4.7.1"
    description: "This plugin names notes as per your language setting"
    menuPath: "Plugins.Notes." + "Note Names"
+   title: "Note Names"
+   categoryCode: "composing-arranging-tools"
+   thumbnailName: "note_names.png"
 
    id: noteNames
    pluginType: "dialog"
    requiresScore: true
    width: 420
-   height: 180
-   //4.4 title: "Note Names"
-   //4.4 categoryCode: "composing-arranging-tools"
-   //4.4 thumbnailName: "note_names.png"
+   height: 190
+   property var localeData: ({
+      "eo": { title: "Nomoj de la notoj", naming: "Nomado de notoj:", letters: "Literoj", solfege: "Solfegĝo", solfegeNames: ["Do", "Re", "Mi", "Fa", "Sol", "La", "Si"], cancel: "Nuligi", apply: "Apliki" },
+      "et": { title: "Noodinimed", naming: "Nootide nimetused:", letters: "Tähed", solfege: "Solfedžo", solfegeNames: ["Do", "Re", "Mi", "Fa", "Sol", "La", "Si"], cancel: "Tühista", apply: "Rakenda" },
+      "en": { title: "Note Names", naming: "Note naming:", letters: "Letters", solfege: "Solfeggio", solfegeNames: ["Do", "Re", "Mi", "Fa", "Sol", "La", "Ti"], cancel: "Cancel", apply: "Apply" },
+      "cs": { title: "Názvy tónů", naming: "Pojmenování tónů:", letters: "Písmena", solfege: "Solfeggio", solfegeNames: ["Do", "Re", "Mi", "Fa", "Sol", "La", "Si"], cancel: "Zrušit", apply: "Použít" },
+      "da": { title: "Nodebenævnelser", naming: "Nodebenævnelse:", letters: "Bogstaver", solfege: "Solfège", solfegeNames: ["Do", "Re", "Mi", "Fa", "Sol", "La", "Si"], cancel: "Annuller", apply: "Anvend" },
+      "de": { title: "Notennamen", naming: "Benennung der Noten:", letters: "Buchstaben", solfege: "Solfeggio", solfegeNames: ["Do", "Re", "Mi", "Fa", "Sol", "La", "Si"], cancel: "Abbrechen", apply: "Anwenden" },
+      "el": { title: "Ονόματα φθόγγων", naming: "Ονομασία φθόγγων:", letters: "Γράμματα", solfege: "Σολφέζ", solfegeNames: ["Ντο", "Ρε", "Μι", "Φα", "Σολ", "Λα", "Σι"], cancel: "Ακύρωση", apply: "Εφαρμογή" },
+      "es": { title: "Nombres de las notas", naming: "Nombres de las notas:", letters: "Letras", solfege: "Solfeo", solfegeNames: ["Do", "Re", "Mi", "Fa", "Sol", "La", "Si"], cancel: "Cancelar", apply: "Aplicar" },
+      "fr": { title: "Noms des notes", naming: "Nom des notes :", letters: "Lettres", solfege: "Solfège", solfegeNames: ["Do", "Ré", "Mi", "Fa", "Sol", "La", "Si"], cancel: "Annuler", apply: "Appliquer" },
+      "it": { title: "Nomi delle note", naming: "Nomenclatura delle note:", letters: "Lettere", solfege: "Solfeggio", solfegeNames: ["Do", "Re", "Mi", "Fa", "Sol", "La", "Si"], cancel: "Annulla", apply: "Applica" },
+      "ja": { title: "音名", naming: "音名の表記:", letters: "文字音名", solfege: "ソルフェージュ", solfegeNames: ["ド", "レ", "ミ", "ファ", "ソ", "ラ", "シ"], cancel: "キャンセル", apply: "適用" },
+      "nb": { title: "Note navn", naming: "Navngiving av noter:", letters: "Bokstaver", solfege: "Solfeggio", solfegeNames: ["Do", "Re", "Mi", "Fa", "Sol", "La", "Ti"], cancel: "Avbryt", apply: "Bruk" },
+      "nl": { title: "Notennamen", naming: "Notennamen:", letters: "Letters", solfege: "Solfège", solfegeNames: ["Do", "Re", "Mi", "Fa", "Sol", "La", "Si"], cancel: "Annuleren", apply: "Toepassen" },
+      "pl": { title: "Nazwy nut", naming: "Nazewnictwo nut:", letters: "Litery", solfege: "Solfeż", solfegeNames: ["Do", "Re", "Mi", "Fa", "Sol", "La", "Si"], cancel: "Anuluj", apply: "Zastosuj" },
+      "pt": { title: "Nomes das notas", naming: "Nomeação das notas:", letters: "Letras", solfege: "Solfejo", solfegeNames: ["Dó", "Ré", "Mi", "Fá", "Sol", "Lá", "Si"], cancel: "Cancelar", apply: "Aplicar" },
+      "ro": { title: "Denumiri de note", naming: "Denumirea notelor:", letters: "Litere", solfege: "Solfegiu", solfegeNames: ["Do", "Re", "Mi", "Fa", "Sol", "La", "Si"], cancel: "Anulează", apply: "Aplică" },
+      "ru": { title: "Названия нот", naming: "Названия нот:", letters: "Буквы", solfege: "Сольфеджио", solfegeNames: ["До", "Ре", "Ми", "Фа", "Соль", "Ля", "Си"], cancel: "Отмена", apply: "Применить" },
+      "sk": { title: "Názvy tónov", naming: "Pomenovanie tónov:", letters: "Písmená", solfege: "Solmizácia", solfegeNames: ["Do", "Re", "Mi", "Fa", "Sol", "La", "Si"], cancel: "Zrušiť", apply: "Použiť" },
+      "sv": { title: "Notnamn", naming: "Namngivning av noter:", letters: "Bokstäver", solfege: "Solfège", solfegeNames: ["Do", "Re", "Mi", "Fa", "Sol", "La", "Si"], cancel: "Avbryt", apply: "Tillämpa" }
+   })
+   property string detectedLanguage: detectLanguage()
+   property string dialogLanguage: localeData[detectedLanguage] ? detectedLanguage : "en"
+   property string appLanguage: dialogLanguage
    Component.onCompleted : {
       if (mscoreMajorVersion >= 4 && mscoreMinorVersion <= 3) {
-         noteNames.title = "Note Names"
+         noteNames.title = localeData[appLanguage].title
          noteNames.categoryCode = "composing-arranging-tools"
          noteNames.thumbnailName = "note_names.png"
       }
@@ -41,6 +65,37 @@ MuseScore {
 
    // 0 = letters, 1 = solfege
    property int namingMode: 0
+
+   function detectLanguage() {
+      var locale = Qt.locale().name || ""
+      var normalizedLocale = locale.toLowerCase().replace(/-/g, "_")
+      var language = normalizedLocale.split(/[_.@]/)[0]
+      if (language && language !== "c" && language !== "posix")
+         return language
+
+      var noteNames = [
+         qsTranslate("global", "C"),
+         qsTranslate("global", "D"),
+         qsTranslate("global", "E"),
+         qsTranslate("global", "F"),
+         qsTranslate("global", "G"),
+         qsTranslate("global", "A"),
+         qsTranslate("global", "B")
+      ]
+      var signatures = {
+         "C|D|E|F|G|A|B": "en",
+         "C|D|E|F|G|A|H": "de",
+         "До|Ре|Ми|Фа|Соль|Ля|Си": "ru",
+         "Dó|Ré|Mi|Fá|Sol|Lá|Si": "pt",
+         "ド|レ|ミ|ファ|ソ|ラ|シ": "ja",
+         "Ντο|Ρε|Μι|Φα|Σολ|Λα|Σι": "el"
+      }
+      var noteSignature = noteNames.join("|")
+      if (signatures[noteSignature])
+         return signatures[noteSignature]
+
+      return "en"
+   }
 
    SystemPalette {
       id: palette
@@ -52,11 +107,16 @@ MuseScore {
          return "?"
 
       // MuseScore TPC order: F, C, G, D, A, E, B
-      var names = ["Фа", "До", "Соль", "Ре", "Ля", "Ми", "Си"]
+      var solfegeNames = localeData[appLanguage].solfegeNames
+      var names = [solfegeNames[3], solfegeNames[0], solfegeNames[4], solfegeNames[1], solfegeNames[5], solfegeNames[2], solfegeNames[6]]
       var accidentals = ["♭♭", "♭", "", "♯", "♯♯"]
       var noteIndex = (tpc + 1) % 7
       var accidentalIndex = Math.floor((tpc + 1) / 7)
       return names[noteIndex] + accidentals[accidentalIndex]
+   }
+
+   function letterNames() {
+      return [qsTranslate("global", "C"), qsTranslate("global", "D"), qsTranslate("global", "E"), qsTranslate("global", "F"), qsTranslate("global", "G"), qsTranslate("global", "A"), qsTranslate("global", "B")].join(" ")
    }
 
    Rectangle {
@@ -66,15 +126,22 @@ MuseScore {
       Text {
          x: 20
          y: 16
-         text: "Note naming:"
+         text: localeData[appLanguage].naming
          color: palette.windowText
          font.pixelSize: 16
+      }
+
+      Text {
+         x: 20
+         y: 38
+         text: "Detected language: " + detectedLanguage + " (locale: " + Qt.locale().name + ")"
+         color: palette.windowText
       }
 
       Rectangle {
          id: lettersButton
          x: 20
-         y: 48
+         y: 62
          width: parent.width - 40
          height: 36
          color: namingMode === 0 ? palette.highlight : palette.button
@@ -82,20 +149,20 @@ MuseScore {
 
          Text {
             anchors.centerIn: parent
-            text: "Letters — C D E F G A B"
+            text: localeData[appLanguage].letters + " — " + letterNames()
             color: namingMode === 0 ? palette.highlightedText : palette.buttonText
          }
 
          MouseArea {
             anchors.fill: parent
-            onClicked: namingMode = 0
+            onClicked: noteNames.namingMode = 0
          }
       }
 
       Rectangle {
          id: solfegeButton
          x: 20
-         y: 94
+         y: 108
          width: parent.width - 40
          height: 36
          color: namingMode === 1 ? palette.highlight : palette.button
@@ -103,19 +170,19 @@ MuseScore {
 
          Text {
             anchors.centerIn: parent
-            text: "Сольфеджио — До Ре Ми Фа Соль Ля Си"
+            text: localeData[appLanguage].solfege + " — " + localeData[appLanguage].solfegeNames.join(" ")
             color: namingMode === 1 ? palette.highlightedText : palette.buttonText
          }
 
          MouseArea {
             anchors.fill: parent
-            onClicked: namingMode = 1
+            onClicked: noteNames.namingMode = 1
          }
       }
 
       Rectangle {
          x: parent.width - 220
-         y: 142
+         y: 156
          width: 90
          height: 28
          color: palette.button
@@ -123,7 +190,7 @@ MuseScore {
 
          Text {
             anchors.centerIn: parent
-            text: "Cancel"
+            text: localeData[appLanguage].cancel
             color: palette.buttonText
          }
 
@@ -135,7 +202,7 @@ MuseScore {
 
       Rectangle {
          x: parent.width - 120
-         y: 142
+         y: 156
          width: 100
          height: 28
          color: palette.button
@@ -143,14 +210,14 @@ MuseScore {
 
          Text {
             anchors.centerIn: parent
-            text: "Apply"
+            text: localeData[appLanguage].apply
             color: palette.buttonText
          }
 
          MouseArea {
             anchors.fill: parent
             onClicked: {
-               applyNoteNames()
+               applyNoteNames();
                (typeof(quit) === 'undefined' ? Qt.quit : quit)()
             }
          }
@@ -173,17 +240,17 @@ MuseScore {
          if (typeof notes[i].tpc === "undefined") // like for grace notes ?!?
             return
          switch (notes[i].tpc) {
-            case -1: name = mscoreMajorVersion >= 4 ? qsTr("F♭♭") : qsTranslate("InspectorAmbitus", "F♭♭"); break;
-            case  0: name = mscoreMajorVersion >= 4 ? qsTr("C♭♭") : qsTranslate("InspectorAmbitus", "C♭♭"); break;
-            case  1: name = mscoreMajorVersion >= 4 ? qsTr("G♭♭") : qsTranslate("InspectorAmbitus", "G♭♭"); break;
-            case  2: name = mscoreMajorVersion >= 4 ? qsTr("D♭♭") : qsTranslate("InspectorAmbitus", "D♭♭"); break;
-            case  3: name = mscoreMajorVersion >= 4 ? qsTr("A♭♭") : qsTranslate("InspectorAmbitus", "A♭♭"); break;
-            case  4: name = mscoreMajorVersion >= 4 ? qsTr("E♭♭") : qsTranslate("InspectorAmbitus", "E♭♭"); break;
-            case  5: name = mscoreMajorVersion >= 4 ? qsTr("B♭♭") : qsTranslate("InspectorAmbitus", "B♭♭"); break;
+            case -1: name = mscoreMajorVersion >= 4 ? qsTranslate("global", "F♭♭") : qsTranslate("InspectorAmbitus", "F♭♭"); break;
+            case  0: name = mscoreMajorVersion >= 4 ? qsTranslate("global", "C♭♭") : qsTranslate("InspectorAmbitus", "C♭♭"); break;
+            case  1: name = mscoreMajorVersion >= 4 ? qsTranslate("global", "G♭♭") : qsTranslate("InspectorAmbitus", "G♭♭"); break;
+            case  2: name = mscoreMajorVersion >= 4 ? qsTranslate("global", "D♭♭") : qsTranslate("InspectorAmbitus", "D♭♭"); break;
+            case  3: name = mscoreMajorVersion >= 4 ? qsTranslate("global", "A♭♭") : qsTranslate("InspectorAmbitus", "A♭♭"); break;
+            case  4: name = mscoreMajorVersion >= 4 ? qsTranslate("global", "E♭♭") : qsTranslate("InspectorAmbitus", "E♭♭"); break;
+            case  5: name = mscoreMajorVersion >= 4 ? qsTranslate("global", "B♭♭") : qsTranslate("InspectorAmbitus", "B♭♭"); break;
 
-            case  6: name = mscoreMajorVersion >= 4 ? qsTr("F♭") : qsTranslate("InspectorAmbitus", "F♭"); break;
-            case  7: name = mscoreMajorVersion >= 4 ? qsTr("C♭") : qsTranslate("InspectorAmbitus", "C♭"); break;
-            case  8: name = mscoreMajorVersion >= 4 ? qsTr("G♭") : qsTranslate("InspectorAmbitus", "G♭"); break;
+            case  6: name = mscoreMajorVersion >= 4 ? qsTranslate("global", "F♭") : qsTranslate("InspectorAmbitus", "F♭"); break;
+            case  7: name = mscoreMajorVersion >= 4 ? qsTranslate("global", "C♭") : qsTranslate("InspectorAmbitus", "C♭"); break;
+            case  8: name = mscoreMajorVersion >= 4 ? qsTranslate("global", "G♭") : qsTranslate("InspectorAmbitus", "G♭"); break;
             case  9: name = qsTranslate(mscoreMajorVersion >= 4 ? "engraving/instruments:db-piccolo traitName" : "InspectorAmbitus", "D♭"); break;
             case 10: name = qsTranslate(mscoreMajorVersion >= 4 ? "EditPitchBase" : "InspectorAmbitus", "A♭"); break;
             case 11: name = qsTranslate(mscoreMajorVersion >= 4 ? "EditPitchBase" : "InspectorAmbitus", "E♭"); break;
@@ -202,20 +269,20 @@ MuseScore {
             case 22: name = qsTranslate(mscoreMajorVersion >= 4 ? "global" : "InspectorAmbitus", "G♯"); break;
             case 23: name = qsTranslate(mscoreMajorVersion >= 4 ? "global" : "InspectorAmbitus", "D♯"); break;
             case 24: name = qsTranslate(mscoreMajorVersion >= 4 ? "global" : "InspectorAmbitus", "A♯"); break;
-            case 25: name = mscoreMajorVersion >= 4 ? qsTr("E♯") : qsTranslate("InspectorAmbitus", "E♯"); break;
-            case 26: name = mscoreMajorVersion >= 4 ? qsTr("B♯") : qsTranslate("InspectorAmbitus", "B♯"); break;
+            case 25: name = mscoreMajorVersion >= 4 ? qsTranslate("global", "E♯") : qsTranslate("InspectorAmbitus", "E♯"); break;
+            case 26: name = mscoreMajorVersion >= 4 ? qsTranslate("global", "B♯") : qsTranslate("InspectorAmbitus", "B♯"); break;
 
-            case 27: name = mscoreMajorVersion >= 4 ? qsTr("F♯♯") : qsTranslate("InspectorAmbitus", "F♯♯"); break;
-            case 28: name = mscoreMajorVersion >= 4 ? qsTr("C♯♯") : qsTranslate("InspectorAmbitus", "C♯♯"); break;
-            case 29: name = mscoreMajorVersion >= 4 ? qsTr("G♯♯") : qsTranslate("InspectorAmbitus", "G♯♯"); break;
-            case 30: name = mscoreMajorVersion >= 4 ? qsTr("D♯♯") : qsTranslate("InspectorAmbitus", "D♯♯"); break;
-            case 31: name = mscoreMajorVersion >= 4 ? qsTr("A♯♯") : qsTranslate("InspectorAmbitus", "A♯♯"); break;
-            case 32: name = mscoreMajorVersion >= 4 ? qsTr("E♯♯") : qsTranslate("InspectorAmbitus", "E♯♯"); break;
-            case 33: name = mscoreMajorVersion >= 4 ? qsTr("B♯♯") : qsTranslate("InspectorAmbitus", "B♯♯"); break;
-            default: name = qsTr("?")   + text.text; break;
+            case 27: name = mscoreMajorVersion >= 4 ? qsTranslate("global", "F♯♯") : qsTranslate("InspectorAmbitus", "F♯♯"); break;
+            case 28: name = mscoreMajorVersion >= 4 ? qsTranslate("global", "C♯♯") : qsTranslate("InspectorAmbitus", "C♯♯"); break;
+            case 29: name = mscoreMajorVersion >= 4 ? qsTranslate("global", "G♯♯") : qsTranslate("InspectorAmbitus", "G♯♯"); break;
+            case 30: name = mscoreMajorVersion >= 4 ? qsTranslate("global", "D♯♯") : qsTranslate("InspectorAmbitus", "D♯♯"); break;
+            case 31: name = mscoreMajorVersion >= 4 ? qsTranslate("global", "A♯♯") : qsTranslate("InspectorAmbitus", "A♯♯"); break;
+            case 32: name = mscoreMajorVersion >= 4 ? qsTranslate("global", "E♯♯") : qsTranslate("InspectorAmbitus", "E♯♯"); break;
+            case 33: name = mscoreMajorVersion >= 4 ? qsTranslate("global", "B♯♯") : qsTranslate("InspectorAmbitus", "B♯♯"); break;
+            default: name = "?"   + text.text; break;
          } // end switch tpc
 
-         if (namingMode === 1)
+         if (noteNames.namingMode === 1)
             name = solfegeName(notes[i].tpc)
 
          // octave, middle C being C4
@@ -259,7 +326,7 @@ MuseScore {
                case 24: text.text = qsTranslate(mscoreMajorVersion >= 4 ? "engraving/sym" : "accidental", "Natural arrow both") + text.text; break;
                case 25: text.text = qsTranslate(mscoreMajorVersion >= 4 ? "engraving/sym" : "accidental", "Sori") + text.text; break;
                case 26: text.text = qsTranslate(mscoreMajorVersion >= 4 ? "engraving/sym" : "accidental", "Koron") + text.text; break;
-               default: text.text = qsTr("?") + text.text; break;
+               default: text.text = "?" + text.text; break;
             }  // end switch userAccidental
          }  // end if courtesy- and microtonal accidentals
       }  // end for note
